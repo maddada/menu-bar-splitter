@@ -1,5 +1,11 @@
 # Menu Bar Splitter
 
+Homebrew to install my fork:
+```bash
+brew tap maddada/tap
+brew install --cask menu-bar-splitter                                                                                                              
+```
+
 Full credit to the Justin Hamilton for the awesome app, will delete this fork if he merges my PRs.
 
 Just a fork to fix a long standing issue where a permission pop up would keep being shown on every start up.
@@ -7,13 +13,6 @@ Just a fork to fix a long standing issue where a permission pop up would keep be
 And to add the ability to customize the line/dot default icons with different thickness, height, spacing, color, and opacity.
 
 <img width="800" height="1064" alt="2026-02-09_Menu Bar Splitter_01-36-00@2x" src="https://github.com/user-attachments/assets/9355097c-a6b1-469f-9334-06d753bbaeda" />
-
-Homebrew to install my fork:
-```bash
-brew tap maddada/tap
-brew install --cask menu-bar-splitter                                                                                                              
-```
-
 
 ---
 
