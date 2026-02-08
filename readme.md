@@ -11,7 +11,7 @@ Improvements in this fork:
 - Fixes a long standing issue where a permission pop up would keep being shown on every start up.
 - Adds the ability to customize the line/dot default icons with different thickness, height, spacing, color, and opacity.
 
-<img width="800" height="1064" alt="2026-02-09_Menu Bar Splitter_01-36-00@2x" src="https://github.com/user-attachments/assets/9355097c-a6b1-469f-9334-06d753bbaeda" />
+<img width="300" alt="2026-02-09_Menu Bar Splitter_01-36-00@2x" src="https://github.com/user-attachments/assets/9355097c-a6b1-469f-9334-06d753bbaeda" />
 
 ---
 
