@@ -32,6 +32,17 @@ class SplitterItem: NSStatusItem, NSMenuDelegate {
     var isTemplate = false
     
     var updatePrefs: Bool = true
+
+    func applyPadding(to image: NSImage, padding: CGFloat) -> NSImage {
+        guard padding > 0 else { return image }
+        let newWidth = image.size.width + (padding * 2)
+        let newImage = NSImage(size: NSSize(width: newWidth, height: image.size.height))
+        newImage.lockFocus()
+        image.draw(in: NSRect(x: padding, y: 0, width: image.size.width, height: image.size.height))
+        newImage.unlockFocus()
+        newImage.isTemplate = image.isTemplate
+        return newImage
+    }
     
     @objc func addCustomFromItem() {
         if let uuid = self.appDelegate.addCustomImage(), let image = getCustomItem(for: uuid) {
@@ -41,20 +52,22 @@ class SplitterItem: NSStatusItem, NSMenuDelegate {
             if let mb = NSApplication.shared.mainMenu {
                 height = mb.menuBarHeight
             }
-            
+
             image.size.width = (height/image.size.height)*image.size.width
             image.size.height = height
-            
+
             if(image.hasAlphaChannel && image.colorDataEqual) {
                 image.isTemplate = true
             } else {
                 image.isTemplate = false
             }
             self.isTemplate = image.isTemplate
-            
-            statusItem.button?.image = image
+
+            let padding = CGFloat(getPaddingForCustomIcon(id: uuid))
+            let finalImage = (padding > 0) ? applyPadding(to: image, padding: padding) : image
+            statusItem.button?.image = finalImage
             self.appDelegate.refreshAllItems()
-            
+
             appDelegate.savePrefs()
         }
     }
@@ -63,18 +76,21 @@ class SplitterItem: NSStatusItem, NSMenuDelegate {
         if let image = getCustomItem(for: sender.imageID) {
             self.customIconID = sender.imageID
             self.builtinIconKey = -1
-            
+
             if(image.hasAlphaChannel && image.colorDataEqual) {
                 image.isTemplate = true
             } else {
                 image.isTemplate = false
             }
             self.isTemplate = image.isTemplate
-            
+
+            let padding = CGFloat(getPaddingForCustomIcon(id: sender.imageID))
+            let finalImage = (padding > 0) ? applyPadding(to: image, padding: padding) : image
+
             guard let button = statusItem.button else { return }
-            button.image = image
+            button.image = finalImage
             self.refreshItem()
-            
+
             if(self.updatePrefs) { self.appDelegate.savePrefs() }
         }
     }
@@ -97,18 +113,21 @@ class SplitterItem: NSStatusItem, NSMenuDelegate {
     
     func forceSetCustomImage(id: String) {
         var height: CGFloat = 20
-        
+
         if let mb = NSApplication.shared.mainMenu {
             height = mb.menuBarHeight
         }
-        
+
         guard let image = getCustomItem(for: id) else { self.setLineIcon(); return }
-        
+
         image.size.width = (height/image.size.height)*image.size.width
         image.size.height = height
-        
+
+        let padding = CGFloat(getPaddingForCustomIcon(id: id))
+        let finalImage = (padding > 0) ? applyPadding(to: image, padding: padding) : image
+
         guard let button = statusItem.button else { return }
-        button.image = image
+        button.image = finalImage
         self.customIconID = id
         self.builtinIconKey = -1
     }
@@ -276,7 +295,21 @@ class SplitterItem: NSStatusItem, NSMenuDelegate {
     }
     
     @objc func setLineIcon() {
-        statusItem.button?.image = NSImage(named: "lineIcon")
+        var height: CGFloat = 22
+        if let mb = NSApplication.shared.mainMenu {
+            height = mb.menuBarHeight
+        }
+        let rawThickness = UserDefaults.standard.double(forKey: "lineThickness")
+        let thickness = CGFloat(rawThickness > 0 ? rawThickness : 1.0)
+        let rawLineHeight = UserDefaults.standard.double(forKey: "lineHeight")
+        let lineHeight: CGFloat? = rawLineHeight > 0 ? CGFloat(rawLineHeight) : nil
+        let color = UserDefaults.standard.color(forKey: "lineColor")
+        var image: NSImage = BuiltinIconRenderer.lineIcon(thickness: thickness, lineHeight: lineHeight, color: color, height: height)
+        let padding = CGFloat(UserDefaults.standard.integer(forKey: "linePadding"))
+        if padding > 0 {
+            image = applyPadding(to: image, padding: padding)
+        }
+        statusItem.button?.image = image
         self.customIconID = ""
         self.builtinIconKey = 1
         appDelegate.savePrefs()
@@ -292,7 +325,19 @@ class SplitterItem: NSStatusItem, NSMenuDelegate {
     }
     
     @objc func setDotIcon() {
-        statusItem.button?.image = NSImage(named: "dotIcon")
+        var height: CGFloat = 22
+        if let mb = NSApplication.shared.mainMenu {
+            height = mb.menuBarHeight
+        }
+        let rawDiameter = UserDefaults.standard.double(forKey: "dotThickness")
+        let diameter = CGFloat(rawDiameter > 0 ? rawDiameter : 4.0)
+        let color = UserDefaults.standard.color(forKey: "dotColor")
+        var image: NSImage = BuiltinIconRenderer.dotIcon(diameter: diameter, color: color, height: height)
+        let padding = CGFloat(UserDefaults.standard.integer(forKey: "dotPadding"))
+        if padding > 0 {
+            image = applyPadding(to: image, padding: padding)
+        }
+        statusItem.button?.image = image
         self.customIconID = ""
         self.builtinIconKey = 2
         appDelegate.savePrefs()
@@ -305,32 +350,58 @@ class SplitterItem: NSStatusItem, NSMenuDelegate {
     
     init(index: Int, id: String) {
         super.init()
-        
+
         self.id = id
-        
+
         statusIndex = index
-        
+
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        statusItem.button?.image = NSImage(named: "lineIcon")
+
+        var height: CGFloat = 22
+        if let mb = NSApplication.shared.mainMenu {
+            height = mb.menuBarHeight
+        }
+        let thickness = CGFloat(UserDefaults.standard.double(forKey: "lineThickness").clamped(to: 0.5...10))
+        let rawLineHeight = UserDefaults.standard.double(forKey: "lineHeight")
+        let lineHeight: CGFloat? = rawLineHeight > 0 ? CGFloat(rawLineHeight) : nil
+        let color = UserDefaults.standard.color(forKey: "lineColor")
+        var image: NSImage = BuiltinIconRenderer.lineIcon(thickness: thickness, lineHeight: lineHeight, color: color, height: height)
+        let padding = CGFloat(UserDefaults.standard.integer(forKey: "linePadding"))
+        if padding > 0 {
+            image = applyPadding(to: image, padding: padding)
+        }
+        statusItem.button?.image = image
         statusItem.autosaveName = id
-        statusItem.button?.image?.isTemplate = true
         statusItem.isVisible = true
-        
+
         statusItem.menu = makeMainMenu()
     }
-    
+
     init(index: Int) {
         super.init()
         self.id = UUID().uuidString
-        
+
         statusIndex = index
-        
+
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        statusItem.button?.image = NSImage(named: "lineIcon")
+
+        var height: CGFloat = 22
+        if let mb = NSApplication.shared.mainMenu {
+            height = mb.menuBarHeight
+        }
+        let thickness = CGFloat(UserDefaults.standard.double(forKey: "lineThickness").clamped(to: 0.5...10))
+        let rawLineHeight2 = UserDefaults.standard.double(forKey: "lineHeight")
+        let lineHeight2: CGFloat? = rawLineHeight2 > 0 ? CGFloat(rawLineHeight2) : nil
+        let color = UserDefaults.standard.color(forKey: "lineColor")
+        var image: NSImage = BuiltinIconRenderer.lineIcon(thickness: thickness, lineHeight: lineHeight2, color: color, height: height)
+        let padding = CGFloat(UserDefaults.standard.integer(forKey: "linePadding"))
+        if padding > 0 {
+            image = applyPadding(to: image, padding: padding)
+        }
+        statusItem.button?.image = image
         statusItem.autosaveName = (self.id)
-        statusItem.button?.image?.isTemplate = true
         statusItem.isVisible = true
-        
+
         statusItem.menu = makeMainMenu()
     }
 }

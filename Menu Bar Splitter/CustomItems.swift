@@ -16,12 +16,14 @@ class CustomIcon: NSObject {
     var url: URL!
     var image: NSImage!
     var id: String!
-    
-    init(nickname: String, url: URL, image: NSImage, id: String) {
+    var padding: Int = 0
+
+    init(nickname: String, url: URL, image: NSImage, id: String, padding: Int = 0) {
         self.nickname = nickname
         self.url = url
         self.image = image
         self.id = id
+        self.padding = padding
     }
 }
 
@@ -132,6 +134,43 @@ func deleteItem(id: String) {
                     try s.write(to: customIconsDataURL, atomically: true, encoding: .utf8)
                 }
 
+            }
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
+}
+
+func getPaddingForCustomIcon(id: String) -> Int {
+    if let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: sharedGroupIdentifier) {
+        let supportURL = containerURL.appendingPathComponent("Library/Application Support/Menu-Bar-Splitter", isDirectory: true)
+        let customIconsDataURL = supportURL.appendingPathComponent("customIcons/data.json", isDirectory: false)
+        do {
+            if let data = FileManager.default.contents(atPath: customIconsDataURL.path),
+               let obj = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+               let entry = obj[id] as? [String: Any],
+               let padding = entry["padding"] as? Int {
+                return padding
+            }
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
+    return 0
+}
+
+func setPaddingForCustomIcon(id: String, _ padding: Int) {
+    if let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: sharedGroupIdentifier) {
+        let supportURL = containerURL.appendingPathComponent("Library/Application Support/Menu-Bar-Splitter", isDirectory: true)
+        let customIconsDataURL = supportURL.appendingPathComponent("customIcons/data.json", isDirectory: false)
+        do {
+            if let data = FileManager.default.contents(atPath: customIconsDataURL.path),
+               var obj = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+               var entry = obj[id] as? [String: Any] {
+                entry["padding"] = padding
+                obj[id] = entry
+                guard let s = String(data: try JSONSerialization.data(withJSONObject: obj, options: [.prettyPrinted]), encoding: .utf8) else { return }
+                try s.write(to: customIconsDataURL, atomically: true, encoding: .utf8)
             }
         } catch {
             print(error.localizedDescription)

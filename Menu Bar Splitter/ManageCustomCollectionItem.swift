@@ -12,26 +12,38 @@ class ManageCustomCollectionItem: NSCollectionViewItem {
     @IBOutlet weak var iconImageView: NSImageView!
     @IBOutlet weak var titleLabel: NSTextField!
     @IBOutlet weak var buttonStack: NSStackView!
-    
+
     var parentVC: ManageCustomViewController!
     var icon: CustomIcon? = nil
-    
+    var isBuiltIn: Bool = false
+    var iconID: String = ""
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.wantsLayer = true
         view.layer?.cornerRadius = 10
     }
-    
+
+    override var isSelected: Bool {
+        didSet {
+            if isSelected {
+                view.layer?.backgroundColor = NSColor.selectedContentBackgroundColor.cgColor
+            } else {
+                view.layer?.backgroundColor = nil
+            }
+        }
+    }
+
     @IBAction func rename(_ sender: Any) {
         if let icon = self.icon {
             let alert = NSAlert()
             alert.addButton(withTitle: "OK")
             alert.addButton(withTitle: "Cancel")
             alert.messageText = "Rename Icon"
-            
+
             let textField = NSTextField(frame: NSRect(x: 0, y: 0, width: 200, height: 24))
             alert.accessoryView = textField
-            
+
             alert.beginSheetModal(for: self.parentVC.window, completionHandler: {(response) in
                 if(response == .alertFirstButtonReturn) {
                     renameItem(id: icon.id, textField.stringValue)
@@ -42,7 +54,7 @@ class ManageCustomCollectionItem: NSCollectionViewItem {
             })
         }
     }
-    
+
     @IBAction func delete(_ sender: Any) {
         if let icon = self.icon {
             deleteItem(id: icon.id)

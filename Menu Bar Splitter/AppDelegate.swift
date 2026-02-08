@@ -12,7 +12,7 @@ import SwiftUI
 
 class ManageWindow: NSWindow {
     var appDelegate: AppDelegate!
-    
+
     override func close() {
         self.appDelegate.refreshAllItems()
         self.orderOut(NSApp)
@@ -24,12 +24,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     @IBOutlet weak var window: NSWindow!
     var itemArray: [SplitterItem] = []
-    
+
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         if(UserDefaults.standard.object(forKey: "numItems") == nil) {
             UserDefaults.standard.set(0, forKey: "numItems")
         }
-        
+
         if(UserDefaults.standard.integer(forKey:"numItems") == 0) {
             self.addItem()
         } else {
@@ -99,7 +99,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 }
             }
         }
-        
+
         refreshAllItems()
     }
 
@@ -118,32 +118,34 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         })
         return idx
     }
-    
+
     @objc func showAbout() {
         NSApplication.shared.activate(ignoringOtherApps: true)
         window.makeKeyAndOrderFront(NSWorkspace.shared)
     }
-    
+
     @objc func showManage() {
-        let w = ManageWindow(contentRect: NSRect(x: 0, y: 0, width: 400, height: 500), styleMask: [.closable, .titled], backing: .buffered, defer: false)
+        let w = ManageWindow(contentRect: NSRect(x: 0, y: 0, width: 460, height: 500), styleMask: [.closable, .titled], backing: .buffered, defer: false)
         guard let viewController = NSStoryboard(name: "ManageCustom", bundle: .main).instantiateInitialController() as? ManageCustomViewController else { return }
         viewController.appDelegate = self
         w.contentViewController = viewController
         viewController.window = w
-        
+
         w.appDelegate = self
         w.title = "Manage Icons"
+        w.setContentSize(NSSize(width: 460, height: 500))
+        w.center()
         NSApplication.shared.activate(ignoringOtherApps: true)
         w.makeKeyAndOrderFront(NSWorkspace.shared)
     }
-    
+
     @objc func addItem(_ updatePrefs: Bool = true) {
         itemArray.append(SplitterItem(index: itemArray.count))
         if(updatePrefs) {
             self.savePrefs()
         }
     }
-    
+
     @objc func removeItem(index: Int) {
         if(itemArray.count == 1) {
             itemArray.removeFirst()
@@ -176,7 +178,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 itemArray.remove(at: index)
             }
         }
-        
+
         var newIndex = 0
         itemArray.forEach({(i) in
             i.statusIndex = newIndex
@@ -184,12 +186,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         })
         self.savePrefs()
     }
-    
+
     func savePrefs() {
         UserDefaults.standard.set(itemArray.count, forKey: "numItems")
-        
+
         var itemsStr = ""
-        
+
         for item in self.itemArray {
             var itemStr = item.id
             itemStr.append(",\(item.builtinIconKey)")
@@ -198,16 +200,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             itemsStr.append(itemStr)
             itemsStr.append(";")
         }
-        
+
         UserDefaults.standard.set(itemsStr, forKey: "itemsStr")
         refreshAllItems()
     }
-    
+
     @objc func quitSelected() {
         self.savePrefs()
         NSApplication.shared.terminate(self)
     }
-    
+
     @objc func openAtLogin() {
         if(UserDefaults.standard.bool(forKey: "launchAtLogin")) {
             UserDefaults.standard.set(false, forKey: "launchAtLogin")
@@ -220,31 +222,55 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 print("Could not set login item")
             }
         }
-        
+
         itemArray.forEach({(i) in
             i.refreshMenu()
         })
     }
-    
+
     func refreshAllItems() {
         itemArray.forEach({(i) in
             i.refreshItem()
         })
     }
-    
+
+    func reapplyAllIcons() {
+        for item in itemArray {
+            item.updatePrefs = false
+            switch item.builtinIconKey {
+            case 0:
+                item.setBlankIcon()
+            case 1:
+                item.setLineIcon()
+            case 2:
+                item.setDotIcon()
+            case 3:
+                item.setThinBlankIcon()
+            case -1:
+                if item.customIconID != "" {
+                    item.forceSetCustomImage(id: item.customIconID)
+                    item.setTemplate(item.isTemplate)
+                }
+            default:
+                break
+            }
+            item.updatePrefs = true
+        }
+        refreshAllItems()
+    }
+
     func addCustomImage() -> String? {
         if let uuid = selectCustomItem() {
             return uuid
         }
         return nil
     }
-    
+
     @IBAction func openWebsite(_ sender: Any) {
         NSWorkspace.shared.open(URL(string: "https://www.jwhamilton.co")!)
     }
-    
+
     @IBAction func openSource(_ sender: Any) {
         NSWorkspace.shared.open(URL(string: "https://github.com/jwhamilton99/menu-bar-splitter")!)
     }
 }
-
