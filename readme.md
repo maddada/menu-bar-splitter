@@ -2,8 +2,7 @@
 
 Homebrew to install my fork:
 ```bash
-brew tap maddada/tap
-brew install --cask menu-bar-splitter                                                                                                              
+brew install --cask maddada/tap/menu-bar-splitter
 ```
 
 Full credit to the Justin Hamilton for the awesome app, will delete this fork if he merges my PRs.
