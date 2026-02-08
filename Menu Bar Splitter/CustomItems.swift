@@ -9,7 +9,56 @@
 import Foundation
 import AppKit
 
-let sharedGroupIdentifier = "group.com.justinhamilton.Menu-Bar-Splitter.sharedData"
+func customIconsBaseURL() -> URL? {
+    guard let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else { return nil }
+    return appSupport.appendingPathComponent("Menu-Bar-Splitter", isDirectory: true)
+}
+
+func migrateFromGroupContainerIfNeeded() {
+    let key = "migratedFromGroupContainer"
+    guard !UserDefaults.standard.bool(forKey: key) else { return }
+    defer { UserDefaults.standard.set(true, forKey: key) }
+
+    guard let newBase = customIconsBaseURL() else { return }
+    let newCustomIcons = newBase.appendingPathComponent("customIcons", isDirectory: true)
+
+    // Skip if new location already has data
+    if FileManager.default.fileExists(atPath: newCustomIcons.appendingPathComponent("data.json").path) { return }
+
+    let groupID = "group.com.justinhamilton.Menu-Bar-Splitter.sharedData"
+    guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: groupID) else { return }
+    let oldCustomIcons = containerURL
+        .appendingPathComponent("Library/Application Support/Menu-Bar-Splitter/customIcons", isDirectory: true)
+
+    guard FileManager.default.fileExists(atPath: oldCustomIcons.path) else { return }
+
+    do {
+        try FileManager.default.createDirectory(at: newBase, withIntermediateDirectories: true, attributes: nil)
+        // Copy the entire customIcons directory tree
+        if !FileManager.default.fileExists(atPath: newCustomIcons.path) {
+            try FileManager.default.copyItem(at: oldCustomIcons, to: newCustomIcons)
+        }
+
+        // Update stored URLs in data.json to point to the new location
+        let dataURL = newCustomIcons.appendingPathComponent("data.json", isDirectory: false)
+        if let data = FileManager.default.contents(atPath: dataURL.path),
+           var json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+            let oldPrefix = oldCustomIcons.path
+            let newPrefix = newCustomIcons.path
+            for (id, value) in json {
+                if var entry = value as? [String: Any], let url = entry["url"] as? String, url.hasPrefix(oldPrefix) {
+                    entry["url"] = url.replacingOccurrences(of: oldPrefix, with: newPrefix)
+                    json[id] = entry
+                }
+            }
+            let updated = try JSONSerialization.data(withJSONObject: json, options: [.prettyPrinted])
+            try updated.write(to: dataURL)
+        }
+        print("Migration from group container succeeded")
+    } catch {
+        print("Migration from group container failed: \(error.localizedDescription)")
+    }
+}
 
 class CustomIcon: NSObject {
     var nickname: String!
@@ -34,8 +83,7 @@ func getCustomItem(for uuid: String) -> NSImage? {
 
 func getCustomItems() -> [String:NSImage]? {
     var images: [String:NSImage] = [:]
-    if let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: sharedGroupIdentifier) {
-        let supportURL = containerURL.appendingPathComponent("Library/Application Support/Menu-Bar-Splitter", isDirectory: true)
+    if let supportURL = customIconsBaseURL() {
         let customIconsURL = (supportURL.appendingPathComponent("customIcons/images", isDirectory: true))
         do {
             if(FileManager.default.fileExists(atPath: customIconsURL.path)) {
@@ -75,8 +123,7 @@ func getNickname(for id: String) -> String? {
 
 func getNicknames() -> [String: String]? {
     var nicknames: [String: String] = [:]
-    if let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: sharedGroupIdentifier) {
-        let supportURL = containerURL.appendingPathComponent("Library/Application Support/Menu-Bar-Splitter", isDirectory: true)
+    if let supportURL = customIconsBaseURL() {
         let customIconsURL = (supportURL.appendingPathComponent("customIcons", isDirectory: true))
         do {
             let customIconsDataURL = customIconsURL.appendingPathComponent("data.json", isDirectory: false)
@@ -98,8 +145,7 @@ func getNicknames() -> [String: String]? {
 }
 
 func renameItem(id: String, _ newName: String) {
-    if let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: sharedGroupIdentifier) {
-        let supportURL = containerURL.appendingPathComponent("Library/Application Support/Menu-Bar-Splitter", isDirectory: true)
+    if let supportURL = customIconsBaseURL() {
         let customIconsURL = (supportURL.appendingPathComponent("customIcons", isDirectory: true))
         do {
             let customIconsDataURL = customIconsURL.appendingPathComponent("data.json", isDirectory: false)
@@ -119,8 +165,7 @@ func renameItem(id: String, _ newName: String) {
 }
 
 func deleteItem(id: String) {
-    if let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: sharedGroupIdentifier) {
-        let supportURL = containerURL.appendingPathComponent("Library/Application Support/Menu-Bar-Splitter", isDirectory: true)
+    if let supportURL = customIconsBaseURL() {
         let customIconsURL = (supportURL.appendingPathComponent("customIcons", isDirectory: true))
         do {
             let customIconsDataURL = customIconsURL.appendingPathComponent("data.json", isDirectory: false)
@@ -151,8 +196,7 @@ func selectCustomItem() -> String? {
     
     if(dialog.runModal() == NSApplication.ModalResponse.OK) {
         if let result = dialog.url {
-            if let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: sharedGroupIdentifier) {
-                let supportURL = containerURL.appendingPathComponent("Library/Application Support/Menu-Bar-Splitter", isDirectory: true)
+            if let supportURL = customIconsBaseURL() {
                 let customIconsURL = (supportURL.appendingPathComponent("customIcons", isDirectory: true))
                 do {
                     if(!FileManager.default.fileExists(atPath:customIconsURL.path)) {

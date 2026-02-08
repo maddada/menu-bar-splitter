@@ -26,6 +26,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var itemArray: [SplitterItem] = []
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
+        migrateFromGroupContainerIfNeeded()
+
         if(UserDefaults.standard.object(forKey: "numItems") == nil) {
             UserDefaults.standard.set(0, forKey: "numItems")
         }

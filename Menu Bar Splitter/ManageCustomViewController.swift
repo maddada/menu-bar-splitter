@@ -27,8 +27,7 @@ class ManageCustomViewController: NSViewController {
     
     func refreshIcons() {
         self.icons = []
-        if let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: sharedGroupIdentifier) {
-            let supportURL = containerURL.appendingPathComponent("Library/Application Support/Menu-Bar-Splitter", isDirectory: true)
+        if let supportURL = customIconsBaseURL() {
             let customIconsURL = (supportURL.appendingPathComponent("customIcons", isDirectory: true))
             let customIconsDataURL = customIconsURL.appendingPathComponent("data.json", isDirectory: false)
             
