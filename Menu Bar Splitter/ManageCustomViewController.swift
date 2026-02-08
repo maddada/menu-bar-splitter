@@ -12,11 +12,8 @@ import CoreGraphics
 class ManageCustomViewController: NSViewController {
 
     var appDelegate: AppDelegate!
-
     var icons: [CustomIcon] = []
-
     var window: NSWindow!
-
     @IBOutlet weak var collectionView: NSCollectionView!
 
     // Bottom controls

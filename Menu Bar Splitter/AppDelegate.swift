@@ -125,7 +125,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc func showManage() {
-        let w = ManageWindow(contentRect: NSRect(x: 0, y: 0, width: 460, height: 500), styleMask: [.closable, .titled], backing: .buffered, defer: false)
+        let w = ManageWindow(contentRect: NSRect(x: 0, y: 0, width: 400, height: 500), styleMask: [.closable, .titled], backing: .buffered, defer: false)
         guard let viewController = NSStoryboard(name: "ManageCustom", bundle: .main).instantiateInitialController() as? ManageCustomViewController else { return }
         viewController.appDelegate = self
         w.contentViewController = viewController
@@ -133,7 +133,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         w.appDelegate = self
         w.title = "Manage Icons"
-        w.setContentSize(NSSize(width: 460, height: 500))
+        w.setContentSize(NSSize(width: 400, height: 500))
         w.center()
         NSApplication.shared.activate(ignoringOtherApps: true)
         w.makeKeyAndOrderFront(NSWorkspace.shared)
