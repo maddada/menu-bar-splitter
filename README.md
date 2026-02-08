@@ -41,22 +41,6 @@ A simple macOS app to help keep your menu bar organized by adding dividers that 
 
 Made with love by [Justin Hamilton](https://www.jwhamilton.co).
 
-## Install via Homebrew
-
-```bash
-brew install --cask maddada/tap/menu-bar-splitter
-```
-
-## Build & Install
-
-To build a signed release and copy it to your Applications folder:
-
-```bash
-xcodebuild -project "Menu Bar Splitter.xcodeproj" -scheme "Menu Bar Splitter" -configuration Release archive -archivePath /tmp/MenuBarSplitter.xcarchive && \
-xcodebuild -exportArchive -archivePath /tmp/MenuBarSplitter.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath /tmp/MenuBarSplitterExport && \
-cp -R "/tmp/MenuBarSplitterExport/Menu Bar Splitter.app" /Applications/
-```
-
 ## License
 
 Copyright 2021 Justin Hamilton
