@@ -187,8 +187,7 @@ func deleteItem(id: String) {
 }
 
 func getPaddingForCustomIcon(id: String) -> Int {
-    if let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: sharedGroupIdentifier) {
-        let supportURL = containerURL.appendingPathComponent("Library/Application Support/Menu-Bar-Splitter", isDirectory: true)
+    if let supportURL = customIconsBaseURL() {
         let customIconsDataURL = supportURL.appendingPathComponent("customIcons/data.json", isDirectory: false)
         do {
             if let data = FileManager.default.contents(atPath: customIconsDataURL.path),
@@ -205,8 +204,7 @@ func getPaddingForCustomIcon(id: String) -> Int {
 }
 
 func setPaddingForCustomIcon(id: String, _ padding: Int) {
-    if let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: sharedGroupIdentifier) {
-        let supportURL = containerURL.appendingPathComponent("Library/Application Support/Menu-Bar-Splitter", isDirectory: true)
+    if let supportURL = customIconsBaseURL() {
         let customIconsDataURL = supportURL.appendingPathComponent("customIcons/data.json", isDirectory: false)
         do {
             if let data = FileManager.default.contents(atPath: customIconsDataURL.path),
@@ -214,8 +212,8 @@ func setPaddingForCustomIcon(id: String, _ padding: Int) {
                var entry = obj[id] as? [String: Any] {
                 entry["padding"] = padding
                 obj[id] = entry
-                guard let s = String(data: try JSONSerialization.data(withJSONObject: obj, options: [.prettyPrinted]), encoding: .utf8) else { return }
-                try s.write(to: customIconsDataURL, atomically: true, encoding: .utf8)
+                let jsonData = try JSONSerialization.data(withJSONObject: obj, options: [.prettyPrinted])
+                try jsonData.write(to: customIconsDataURL)
             }
         } catch {
             print(error.localizedDescription)

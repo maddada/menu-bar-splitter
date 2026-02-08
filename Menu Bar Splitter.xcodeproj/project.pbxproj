@@ -22,6 +22,7 @@
 		43FBAD8A23F2426E005E3AE9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 43FBAD8823F2426E005E3AE9 /* Main.storyboard */; };
 		43FBAD9223F2428A005E3AE9 /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FBAD9123F2428A005E3AE9 /* ServiceManagement.framework */; };
 		43FBAD9423F242EF005E3AE9 /* Menu Bar Splitter AutoLaunch.app in CopyFiles */ = {isa = PBXBuildFile; fileRef = 43FBAD8023F2426B005E3AE9 /* Menu Bar Splitter AutoLaunch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		AA0000000000000000000002 /* BuiltinIconRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000001 /* BuiltinIconRenderer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -66,6 +67,7 @@
 		43FBAD8B23F2426E005E3AE9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		43FBAD8C23F2426E005E3AE9 /* Menu_Bar_Splitter_AutoLaunch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Menu_Bar_Splitter_AutoLaunch.entitlements; sourceTree = "<group>"; };
 		43FBAD9123F2428A005E3AE9 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
+		AA0000000000000000000001 /* BuiltinIconRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuiltinIconRenderer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -120,6 +122,7 @@
 				439623A12604D06900D0B9A5 /* ManageCustomCollectionItem.swift */,
 				439623A22604D06900D0B9A5 /* ManageCustomCollectionItem.xib */,
 				4396239F2604CFEF00D0B9A5 /* ManageCustomViewController.swift */,
+				AA0000000000000000000001 /* BuiltinIconRenderer.swift */,
 			);
 			path = "Menu Bar Splitter";
 			sourceTree = "<group>";
@@ -254,6 +257,7 @@
 				430D6FCF2395C19600B158F2 /* SplitterItem.swift in Sources */,
 				439623A32604D06900D0B9A5 /* ManageCustomCollectionItem.swift in Sources */,
 				436D574E25F2A0EB0009D420 /* CustomItems.swift in Sources */,
+				AA0000000000000000000002 /* BuiltinIconRenderer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -407,11 +411,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Menu Bar Splitter/Menu_Bar_Splitter.entitlements";
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 2W9EC9X76L;
+				DEVELOPMENT_TEAM = KTKP595G3B;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = "Menu Bar Splitter/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -422,6 +426,7 @@
 				MARKETING_VERSION = 2.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "justinhamilton.Menu-Bar-Splitter";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = NO;
 				SWIFT_VERSION = 5.0;
 			};
@@ -432,11 +437,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Menu Bar Splitter/Menu_Bar_Splitter.entitlements";
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 2W9EC9X76L;
+				DEVELOPMENT_TEAM = KTKP595G3B;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = "Menu Bar Splitter/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -447,6 +452,7 @@
 				MARKETING_VERSION = 2.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "justinhamilton.Menu-Bar-Splitter";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = NO;
 				SWIFT_VERSION = 5.0;
 			};
@@ -457,11 +463,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Menu Bar Splitter AutoLaunch/Menu_Bar_Splitter_AutoLaunch.entitlements";
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 2W9EC9X76L;
+				DEVELOPMENT_TEAM = KTKP595G3B;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = "Menu Bar Splitter AutoLaunch/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -472,6 +478,7 @@
 				MARKETING_VERSION = 2.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "justinhamilton.Menu-Bar-Splitter-AutoLaunch";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
 			};
@@ -482,11 +489,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Menu Bar Splitter AutoLaunch/Menu_Bar_Splitter_AutoLaunch.entitlements";
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 2W9EC9X76L;
+				DEVELOPMENT_TEAM = KTKP595G3B;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = "Menu Bar Splitter AutoLaunch/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -497,6 +504,7 @@
 				MARKETING_VERSION = 2.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "justinhamilton.Menu-Bar-Splitter-AutoLaunch";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
 			};
